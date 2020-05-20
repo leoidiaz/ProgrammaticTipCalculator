@@ -25,7 +25,7 @@ class TipperViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .background
+        setUpView()
     }
     
     //MARK: - Helper Methods
@@ -89,14 +89,36 @@ class TipperViewController: UIViewController {
     func addViewLevelStackViewConstraints(){
         viewLevelComponentStackView.anchor(top: safeArea.topAnchor, bottom: bottomButtonsComponentStackView.topAnchor, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 100, paddingBottom: -125, paddingLeading: 20, paddingTrailing: -20)
     }
-
+    
     func addbottomButtonStackViewConstraints(){
-        bottomButtonsComponentStackView.anchor(top: viewLevelComponentStackView.bottomAnchor, bottom: safeArea.bottomAnchor, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 125, paddingBottom: -100, paddingLeading: 20, paddingTrailing: -20)
+        bottomButtonsComponentStackView.anchor(top: viewLevelComponentStackView.bottomAnchor, bottom: safeArea.bottomAnchor, leading: safeArea.leadingAnchor, trailing: safeArea.trailingAnchor, paddingTop: 125, paddingBottom: -104, paddingLeading: 20, paddingTrailing: -20)
     }
     
-//    func setUpView(){
-
-//    }
+    @objc func activateSwitch(sender: UISwitch){
+        if sender.isOn {
+            UIView.animate(withDuration: 0.2) {
+                self.stepperLabel.isHidden = false
+                self.splitStepper.isHidden = false
+                //                splitBetween = 2
+                self.splitStepper.value = 2
+                self.stepperLabel.text = "2"
+            }
+        } else {
+            UIView.animate(withDuration: 0.2) {
+                self.stepperLabel.isHidden = true
+                self.splitStepper.isHidden = true
+                //                splitBetween = 1
+            }
+        }
+    }
+    
+    
+    func setUpView(){
+        view.backgroundColor = .background
+        self.stepperLabel.isHidden = true
+        self.splitStepper.isHidden = true
+        self.splitSwitch.addTarget(self, action: #selector(activateSwitch(sender:)), for: .touchUpInside)
+    }
     
     // Total Label Constraint
     
@@ -113,12 +135,12 @@ class TipperViewController: UIViewController {
     
     //MARK: - Buttons Stack View
     let bottomButtonsComponentStackView: UIStackView = {
-       let stackView = UIStackView()
-       stackView.axis = .horizontal
-       stackView.alignment = .fill
-       stackView.distribution = .fillEqually
-       stackView.spacing = 50
-       return stackView
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        stackView.spacing = 40
+        return stackView
     }()
     
     let resetButton: TipperButton = {
@@ -147,6 +169,7 @@ class TipperViewController: UIViewController {
         let textField = TipperTextField()
         textField.placeholder = "$0.00"
         textField.textAlignment = .center
+        textField.addConstraint(NSLayoutConstraint(item: textField, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 34))
         
         return textField
     }()
@@ -164,7 +187,6 @@ class TipperViewController: UIViewController {
     let tenButton: TipPercentButton = {
         let button = TipPercentButton()
         button.setTitle("10%", for: .normal)
-//        button.setTitleColor(.black, for: .normal)
         button.contentHorizontalAlignment = .center
         return button
     }()
@@ -172,7 +194,6 @@ class TipperViewController: UIViewController {
     let fifteenButton: TipPercentButton = {
         let button = TipPercentButton()
         button.setTitle("15%", for: .normal)
-//        button.setTitleColor(.black, for: .normal)
         button.contentHorizontalAlignment = .center
         return button
     }()
@@ -180,7 +201,6 @@ class TipperViewController: UIViewController {
     let twentyButton: TipPercentButton = {
         let button = TipPercentButton()
         button.setTitle("20%", for: .normal)
-//        button.setTitleColor(.black, for: .normal)
         button.contentHorizontalAlignment = .center
         return button
     }()
@@ -209,7 +229,7 @@ class TipperViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .fill
-        stackView.distribution = .fill
+        stackView.distribution = .fillProportionally
         stackView.spacing = 100
         return stackView
     }()
@@ -262,7 +282,7 @@ class TipperViewController: UIViewController {
         stackView.axis = .horizontal
         stackView.alignment = .fill
         stackView.distribution = .equalSpacing
-//        stackView.spacing = 50
+        //        stackView.spacing = 50
         return stackView
     }()
     
