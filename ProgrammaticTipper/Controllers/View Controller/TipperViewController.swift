@@ -13,7 +13,9 @@ class TipperViewController: UIViewController {
     var safeArea: UILayoutGuide {
         return self.view.safeAreaLayoutGuide
     }
-    
+    var tip = 0.0
+    var splitBetween = 1
+    var total = 0.0
     //MARK: - Lifecycle
     
     override func loadView() {
@@ -99,7 +101,7 @@ class TipperViewController: UIViewController {
             UIView.animate(withDuration: 0.2) {
                 self.stepperLabel.isHidden = false
                 self.splitStepper.isHidden = false
-                //                splitBetween = 2
+                self.splitBetween = 2
                 self.splitStepper.value = 2
                 self.stepperLabel.text = "2"
             }
@@ -107,7 +109,7 @@ class TipperViewController: UIViewController {
             UIView.animate(withDuration: 0.2) {
                 self.stepperLabel.isHidden = true
                 self.splitStepper.isHidden = true
-                //                splitBetween = 1
+                self.splitBetween = 1
             }
         }
     }
@@ -118,6 +120,57 @@ class TipperViewController: UIViewController {
         self.stepperLabel.isHidden = true
         self.splitStepper.isHidden = true
         self.splitSwitch.addTarget(self, action: #selector(activateSwitch(sender:)), for: .touchUpInside)
+        self.tenButton.addTarget(self, action: #selector(tipChanged(sender:)), for: .touchUpInside)
+        self.fifteenButton.addTarget(self, action: #selector(tipChanged(sender:)), for: .touchUpInside)
+        self.twentyButton.addTarget(self, action: #selector(tipChanged(sender:)), for: .touchUpInside)
+        self.resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
+        self.splitStepper.addTarget(self, action: #selector(splitStepperTapped(sender:)), for: .touchUpInside)
+        self.calculateButton.addTarget(self, action: #selector(calculateButtonTapped(sender:)), for: .touchUpInside)
+    }
+    @objc func tipChanged(sender: UIButton){
+        resetTipButtons()
+        sender.backgroundColor = .mainTextColor
+        sender.setTitleColor(.background, for: .normal)
+        guard let tipTitle = sender.currentTitle else { return }
+        let prepareDouble = String(tipTitle.dropLast())
+        guard let tipDouble = Double(prepareDouble) else { return }
+        tip = tipDouble / 100
+    }
+    @objc func splitStepperTapped(sender: UIStepper){
+        splitStepper.minimumValue = 2
+        stepperLabel.text = String(format: "%.0f", sender.value)
+        splitBetween = Int(sender.value)
+    }
+    @objc func calculateButtonTapped(sender: UIButton){
+        guard let subtotal = subtotalText.text, !subtotal.isEmpty else { totalLabel.text = "Enter a subtotal" ;return }
+        guard let updatedTotal = Double(subtotal) else { totalLabel.text = "NaN" ; return}
+        let sum = (updatedTotal * tip + updatedTotal) / Double(splitBetween)
+        totalLabel.text = "$ \(sum)"
+    }
+    @objc func resetButtonTapped(){
+        UIView.animate(withDuration: 0.2){
+            self.resetTipButtons()
+            self.subtotalText.resignFirstResponder()
+            self.tip = 0.0
+            self.splitBetween = 1
+            self.total = 0.0
+            self.totalLabel.text = "Total"
+            self.subtotalText.text = ""
+            self.splitSwitch.isOn = false
+            self.stepperLabel.isHidden = true
+            self.splitStepper.isHidden = true
+        }
+    }
+    func resetTipButtons(){
+        tenButton.isSelected = false
+        tenButton.setTitleColor(.whiteCloud, for: .normal)
+        tenButton.backgroundColor = .background
+        fifteenButton.isSelected = false
+        fifteenButton.backgroundColor = .background
+        fifteenButton.setTitleColor(.whiteCloud, for: .normal)
+        twentyButton.isSelected = false
+        twentyButton.backgroundColor = .background
+        twentyButton.setTitleColor(.whiteCloud, for: .normal)
     }
     
     // Total Label Constraint
